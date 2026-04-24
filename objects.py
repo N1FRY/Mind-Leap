@@ -38,31 +38,6 @@ class Block(sprite.Sprite):
                 self.image = image.load("%s/Sprites/door_button.png" % ICON_DIR)
             if self.type2 == 2:
                 self.image = image.load("%s/Sprites/door_bulb.png" % ICON_DIR)
-        # if self.type1 == "laser":
-        #     if self.type2 == 1:
-        #         self.image = image.load("%s/Sprites/laser_beg1.png" % ICON_DIR)
-        #     elif self.type2 == 2:
-        #         self.image = image.load("%s/Sprites/laser_mid1.png" % ICON_DIR)
-        #     elif self.type2 == 3:
-        #         self.image = image.load("%s/Sprites/laser_end1.png" % ICON_DIR)
-        #     elif self.type2 == 4:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_beg1.png" % ICON_DIR), 90)
-        #     elif self.type2 == 5:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_mid1.png" % ICON_DIR), 90)
-        #     elif self.type2 == 6:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_end1.png" % ICON_DIR), 90)
-        #     elif self.type2 == 7:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_beg1.png" % ICON_DIR), 180)
-        #     elif self.type2 == 8:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_mid1.png" % ICON_DIR), 180)
-        #     elif self.type2 == 9:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_end1.png" % ICON_DIR), 180)
-        #     elif self.type2 == 10:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_beg1.png" % ICON_DIR), 270)
-        #     elif self.type2 == 11:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_mid1.png" % ICON_DIR), 270)
-        #     elif self.type2 == 12:
-        #         self.image = transform.rotate(image.load("%s/Sprites/laser_end1.png" % ICON_DIR), 270)
 
     def door_opened(self):
         if self.type1 == "door":
@@ -358,42 +333,6 @@ class Match(sprite.Sprite):
         self.image = pygame.transform.scale(self.image, self.size)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
-class Button:
-    def __init__(self,x,y,width,height,text,image_path,hover_image_path=None,sound_path=None):
-        self.x=x
-        self.y=y
-        self.width=width
-        self.height=height
-        self.text=text
-
-        self.image=pygame.image.load(image_path)
-        self.image=pygame.transform.scale(self.image,(width,height))
-        self.hover_image=self.image
-        if hover_image_path:
-            self.hover_image=pygame.image.load(hover_image_path)
-            self.hover_image=pygame.transform.scale(self.hover_image,(width,height))
-        self.rect=self.image.get_rect(topleft=(x,y))
-        self.sound=None
-        if sound_path:
-            self.sound=pygame.mixer.Sound(sound_path)
-        self.is_hovered=False
-
-    def draw(self,screen):
-        current_image= self.hover_image if self.is_hovered else self.image
-        screen.blit(current_image,self.rect.topleft)
-        font=pygame.font.Font(None,36)
-        text_surface=font.render(self.text,True,(0,0,0))
-        text_rect=text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface,text_rect)
-  
-    def check_hover(self,mouse_pos):
-        self.is_hovered=self.rect.collidepoint(mouse_pos)
-    def handle_event(self,event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.is_hovered:
-            if self.sound:
-                self.sound.play()
-        pygame.event.post(pygame.event.Event(pygame.USEREVENT,button=self))
-
 class Placeholder(sprite.Sprite):
     def __init__(self, num, taken = None):
         sprite.Sprite.__init__(self)
@@ -551,7 +490,7 @@ class Placeholder(sprite.Sprite):
             self.hitbox = Rect(self.x + 8, self.y + 24, 112, 16)
         self.image = pygame.transform.scale(self.image, self.size)
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
-        self.image.set_alpha(50)
+        self.image.set_alpha(30)
     # def update(self):
     #     if self.taken:
     #         if 1 <= self.num <= 25:
