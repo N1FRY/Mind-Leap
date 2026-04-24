@@ -7,12 +7,16 @@ from player import *
 from objects import *
 from levels import *
 
+pygame.init()
+
 # Переменные
 WIN_WIDTH = 1280 # Ширина окна
 WIN_HEIGHT = 800 # Высота окна
 DISPLAY = (WIN_WIDTH, WIN_HEIGHT) 
 BACKGROUND_COLOR = "White" 
 FPS = 60
+font = pygame.font.SysFont(None, 24)
+big_font = pygame.font.SysFont(None, 64)
 running = True
 # puzzle_complete = False
 
@@ -39,6 +43,11 @@ def game(lvl, puz_completed = None):
     pygame.display.set_caption("Mind Leap")
 
     timer = pygame.time.Clock()
+
+    txt1 = font.render("ESC – главное меню", True, (0, 0, 0))
+    txt2 = font.render("A, W, D – движение", True, (0, 0, 0))
+    txt3 = font.render("E – головоломка", True, (0, 0, 0))
+    txt4 = font.render("R – перезапуск", True, (0, 0, 0))
 
     left = right = up = False
     
@@ -110,13 +119,16 @@ def game(lvl, puz_completed = None):
                     right = True
                 if (e.key == K_LEFT or e.key == K_a):
                     left = True
-                if (e.key == K_BACKSPACE):
-                    game(lvl+1)
+                # if (e.key == K_BACKSPACE):
+                #     game(lvl+1)
+                #     running = 0
+                if e.key == K_ESCAPE:
+                    main_menu()
                     running = 0
                 if e.key == K_r:
                     for p in puzzles:
                       p.completed = False
-                    game(lvl)
+                    game(lvl, puz_completed)
                     running = 0
                 if e.key == K_e:
                     for p in puzzles:
@@ -174,17 +186,103 @@ def game(lvl, puz_completed = None):
         if hero.rect.collidelistall(exits):
             if lvl != 3:
                 game(lvl+1)
-                running = 0
             else:
                 mb.showinfo("Mind Leap",f"Игра пройдена!")
-                running = 0
+                exit()
+            running = 0
     
         screen.blit(bg, (0,0))
+        screen.blit(txt1, (40, 40))
+        screen.blit(txt2, (40, 64))
+        screen.blit(txt3, (40, 88))
+        screen.blit(txt4, (40, 112))
         hero.update(left, right, up, blocks)
         cube.update(blocks, hero)
         entities.draw(screen) 
         pygame.display.update() 
         #print(f'FPS={int(timer.get_fps())}')
+
+def main_menu():
+    global running
+
+    entities = pygame.sprite.Group()
+    screen = pygame.display.set_mode(DISPLAY)
+    bg = Surface((WIN_WIDTH,WIN_HEIGHT))
+    pygame.display.update() 
+    bg.fill(Color(BACKGROUND_COLOR))
+    bg = image.load(f"%s/Sprites/bg_main_menu.png" % ICON_DIR)    
+    pygame.display.set_caption("Mind Leap")
+
+    timer = pygame.time.Clock()
+
+    play_button = Rect(475, 390, 260, 80)
+    level_button = Rect(525, 530, 185, 65)
+    exit_button = Rect(530, 630, 180, 65)
+
+    while running:        
+        timer.tick(FPS)
+        for e in pygame.event.get(): 
+            if e.type == QUIT:
+                exit()
+            if e.type == MOUSEBUTTONDOWN and e.button == 1:
+                # print(mouse.get_pos())
+                if play_button.collidepoint(mouse.get_pos()):
+                    game(0, False)
+                    running = 0
+                if level_button.collidepoint(mouse.get_pos()):
+                    level_select()
+                    running = 0
+                if exit_button.collidepoint(mouse.get_pos()):
+                    exit()
+
+
+        screen.blit(bg, (0,0))
+        entities.draw(screen) 
+        pygame.display.update() 
+
+def level_select():
+    global running
+
+    entities = pygame.sprite.Group()
+    screen = pygame.display.set_mode(DISPLAY)
+    bg = Surface((WIN_WIDTH,WIN_HEIGHT))
+    pygame.display.update() 
+    bg.fill(Color(BACKGROUND_COLOR))
+    bg = image.load(f"%s/Sprites/bg_level_select.png" % ICON_DIR)    
+    pygame.display.set_caption("Mind Leap")
+
+    timer = pygame.time.Clock()
+
+    lvl1_button = Rect(130, 335, 235, 95)
+    lvl2_button = Rect(380, 520, 260, 120)
+    lvl3_button = Rect(645, 315, 250, 105)
+    lvl4_button = Rect(900, 500, 260, 120)
+    menu_button = Rect(45, 35, 180, 80)
+
+    while running:        
+        timer.tick(FPS)
+        for e in pygame.event.get(): 
+            if e.type == QUIT:
+                exit()
+            if e.type == MOUSEBUTTONDOWN and e.button == 1:
+                # print(mouse.get_pos())
+                if menu_button.collidepoint(mouse.get_pos()):
+                    main_menu()
+                    running = 0
+                if lvl1_button.collidepoint(mouse.get_pos()):
+                    game(0, False)
+                    running = 0
+                if lvl2_button.collidepoint(mouse.get_pos()):
+                    game(1, False)
+                if lvl3_button.collidepoint(mouse.get_pos()):
+                    game(2, False)
+                if lvl4_button.collidepoint(mouse.get_pos()):
+                    game(3, False)
+
+
+        screen.blit(bg, (0,0))
+        entities.draw(screen) 
+        pygame.display.update() 
 
 def buts(lvl = None, puz_level = 0):
     global running
@@ -197,6 +295,8 @@ def buts(lvl = None, puz_level = 0):
     pygame.display.set_caption("Mind Leap")
 
     timer = pygame.time.Clock()
+
+    txt = font.render("ESC – главное меню", True, (0, 0, 0))
 
     # Список цветов кнопок
     colors = ["red", "yellow", "blue", "purple", "green"]
@@ -219,12 +319,15 @@ def buts(lvl = None, puz_level = 0):
                 exit()
             
             if e.type == KEYDOWN:
+                if e.key == K_ESCAPE:
+                    main_menu()
+                    running = 0
                 if e.key == K_r:
                     buts(lvl)
                     running = 0
-                if e.key == K_BACKSPACE:
-                    game(lvl, False)
-                    running = 0
+                # if e.key == K_BACKSPACE:
+                #     game(lvl, False)
+                #     running = 0
 
             
             if e.type == pygame.MOUSEBUTTONDOWN:       
@@ -244,6 +347,7 @@ def buts(lvl = None, puz_level = 0):
         
         # print(mouse.get_pos())
         screen.blit(bg, (0,0))
+        screen.blit(txt, (8, 8))
         entities.draw(screen) 
         pygame.display.update() 
         # print(f'FPS={int(timer.get_fps())}')
@@ -261,6 +365,8 @@ def maze(lvl):
     pygame.display.set_caption("Mind Leap") 
 
     timer = pygame.time.Clock()
+
+    txt = font.render("ESC – главное меню", True, (0, 0, 0))
 
     mouse.set_pos(32 * 4, 32 * 4)
 
@@ -289,9 +395,12 @@ def maze(lvl):
                 if e.key == K_r:
                     maze(lvl)
                     running = 0
-                if e.key == K_BACKSPACE:
-                    game(lvl, True)
+                if e.key == K_ESCAPE:
+                    main_menu()
                     running = 0
+                # if e.key == K_BACKSPACE:
+                #     game(lvl, True)
+                #     running = 0
             
         mouse_pos = mouse.get_pos()
         for b in blocks:
@@ -300,8 +409,10 @@ def maze(lvl):
         for e in objects:
             if e.rect.collidepoint(mouse_pos):
                 game(lvl, True)
+                running = 0
 
         screen.blit(bg, (0,0))
+        screen.blit(txt, (8, 8))
         entities.draw(screen) 
         pygame.display.update()
         # print(f'FPS={int(timer.get_fps())}')
@@ -317,6 +428,10 @@ def mats(lvl = None, puz_level = 0):
     pygame.display.set_caption("Mind Leap")
 
     timer = pygame.time.Clock()
+    
+    txt_lose = font.render("", True, (0, 0, 0))
+    txt1 = font.render("ESC – главное меню", True, (0, 0, 0))
+    txt2 = font.render("F – повернуть спичку", True, (0, 0, 0))
 
     matches = []
     placeholders = []
@@ -349,9 +464,12 @@ def mats(lvl = None, puz_level = 0):
                 if e.key == K_r:
                     mats(lvl, puz_level)
                     running = 0
-                if e.key == K_BACKSPACE:
-                    game(lvl, False)
+                if e.key == K_ESCAPE:
+                    main_menu()
                     running = 0
+                # if e.key == K_BACKSPACE:
+                #     game(lvl, False)
+                #     running = 0
                 if e.key == K_f and held:
                     if held_m.orient == "hor":
                         held_m.rotate("vert")
@@ -383,17 +501,16 @@ def mats(lvl = None, puz_level = 0):
                                     held = False
                                     k -= 1
             elif k == 0:
-                print("Для перезапуска нажмите R")
+                txt_lose = big_font.render("R – перезапуск", True, (0, 0, 0))
                 
             if not placeholders[levels_matches[puz_level][-1][0] - 1].taken and placeholders[levels_matches[puz_level][-1][1] - 1].taken:
-                if puz_level != 1:
+                if puz_level != 2:
                     mats(lvl, puz_level + 1)
                 else:
                    game(lvl, True)
                 running = 0
             
-
-        print(held)
+        # print(held)
 
         for m in matches:
             m.update(mouse.get_pos())
@@ -402,11 +519,16 @@ def mats(lvl = None, puz_level = 0):
 
         # print(mouse.get_pos())
         screen.blit(bg, (0,0))
+        screen.blit(txt1, (8, 8))
+        screen.blit(txt2, (8, 32))
+        screen.blit(txt_lose, (448, 128))
         entities.draw(screen) 
         pygame.display.update() 
         # print(f'FPS={int(timer.get_fps())}')
 
-game(0)
+# game(0)
 # buts(1)
 # maze(3)
 # mats(2)
+# level_select()
+main_menu()
